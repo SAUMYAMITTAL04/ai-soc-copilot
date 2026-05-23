@@ -2,6 +2,9 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 import time
+from app.database import engine
+
+
 
 import os
 import requests
@@ -24,14 +27,16 @@ else:
 st.markdown("Live Autonomous Threat Triage & Intelligence")
 
 # 2. Database Connection Helper
-def load_data():
-    # Connect directly to the SQLite vault we built
-    conn = sqlite3.connect("soc_logs.db")
-    # Pull everything and order it with the newest logs at the top
-    df = pd.read_sql_query("SELECT * FROM security_logs ORDER BY id DESC", conn)
-    conn.close()
-    return df
 
+
+def load_data():
+    try:
+        # Read from the exact same Cloud Engine that FastAPI uses
+        df = pd.read_sql("SELECT * FROM security_logs", engine) 
+        return df
+    except Exception as e:
+        st.error(f"Database connection error: {e}")
+        return pd.DataFrame()
 # 3. Build the User Interface
 try:
     df = load_data()
