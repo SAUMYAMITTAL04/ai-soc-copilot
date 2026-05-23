@@ -12,3 +12,4 @@ google-generativeai
 sqlalchemy
 streamlit
 pandas
+psycopg2-binary
