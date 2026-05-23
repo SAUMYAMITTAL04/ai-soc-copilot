@@ -11,6 +11,13 @@ st.set_page_config(
 )
 
 st.title("🛡️ Enterprise AI SOC Command Center")
+# --- DIAGNOSTIC PROBE ---
+db_url = os.getenv("DATABASE_URL", "sqlite")
+if "postgres" in db_url:
+    st.success("🔌 Connected to Neon Cloud Vault!")
+else:
+    st.error("⚠️ WARNING: Operating on Local SQLite Backup. Cloud key is missing.")
+# ------------------------
 st.markdown("Live Autonomous Threat Triage & Intelligence")
 
 # 2. Database Connection Helper
