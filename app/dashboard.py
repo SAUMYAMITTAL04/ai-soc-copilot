@@ -3,6 +3,9 @@ import sqlite3
 import pandas as pd
 import time
 
+import os
+import requests
+
 # 1. Page Configuration
 st.set_page_config(
     page_title="AI SOC Copilot",
