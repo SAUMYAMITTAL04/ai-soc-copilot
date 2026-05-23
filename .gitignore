@@ -1,0 +1,11 @@
+# Python Environment
+venv/
+__pycache__/
+*.pyc
+
+# Local Database
+*.db
+soc_logs.db
+
+# Environment Variables (NEVER UPLOAD YOUR API KEYS!)
+.env
