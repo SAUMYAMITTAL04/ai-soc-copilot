@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 import time
-from app.database import engine
+from database import engine
 
 
 
