@@ -26,7 +26,8 @@ st.markdown("Live Autonomous Threat Triage & Intelligence")
 def load_data():
     try:
         # Read from the exact same Cloud Engine that FastAPI uses
-        df = pd.read_sql("SELECT * FROM security_logs", engine) 
+        
+        df = pd.read_sql("SELECT * FROM threat_intel_logs", engine)
         return df
     except Exception as e:
         st.error(f"Database connection error: {e}")

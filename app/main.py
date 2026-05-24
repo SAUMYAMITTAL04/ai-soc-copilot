@@ -36,30 +36,33 @@ async def root_status():
 
 # 3. The Upgraded Intelligence Endpoint
 @app.post("/analyze")
+
 async def analyze_log_endpoint(request: LogInput, db: Session = Depends(get_db)):
     
     # A. Pass the raw log to LangGraph to think about
     initial_state = {"log_data": request.log_data, "analysis": "", "is_threat": False}
     result = soc_copilot.invoke(initial_state)
     
-    # B. Write the AI's final decision permanently into our SQLite Database
+    # Catch the countermeasure (we check both names just in case the AI varied it!)
+    countermeasure = result.get("soar_action", result.get("action_taken", "✅ None Required - Routine Event"))
+
+    # B. Write the AI's final decision permanently into our Database
     db_log = SecurityLog(
         raw_log=request.log_data,
-        analysis=result["analysis"],
-        is_threat=result["is_threat"]
+        analysis=result.get("analysis", ""),
+        is_threat=result.get("is_threat", False),
+        soar_action=countermeasure # 🛡️ Wired directly to our new bucket!
     )
     db.add(db_log)
     db.commit()
-    db.refresh(db_log) # Refreshes to grab the new automatic ID number
+    db.refresh(db_log) 
     
     # C. Send the final package back to the user
-    final_action = result.get("action_taken", "✅ None Required - Routine Event")
-
     return {
-        "incident_id": db_log.id, # We now have an official tracking number!
-        "threat_detected": result["is_threat"],
-        "ai_analysis": result["analysis"],
-        "soar_action": final_action
+        "incident_id": db_log.id, 
+        "threat_detected": db_log.is_threat,
+        "ai_analysis": db_log.analysis,
+        "soar_action": db_log.soar_action
     }
 
 if __name__ == "__main__":

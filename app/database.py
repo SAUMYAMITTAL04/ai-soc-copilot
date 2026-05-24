@@ -19,13 +19,19 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
+
+
 class SecurityLog(Base):
-    __tablename__ = "security_logs"
+    __tablename__ = "threat_intel_logs" # 🚨 Changed the name to force a new table!
 
     id = Column(Integer, primary_key=True, index=True)
     raw_log = Column(String)
     analysis = Column(String)
     is_threat = Column(Boolean, default=False)
+    soar_action = Column(String, nullable=True) # 🛡️ Our new SOAR bucket!
+
+# Build the tables
+
 
 # Build the tables
 Base.metadata.create_all(bind=engine)
