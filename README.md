@@ -18,8 +18,6 @@ In a standard enterprise environment, security operations rely on disconnected v
 ---
 
 ## 📊 Command Center UI & Performance
-
-*Figure 2: Active SOAR playbooks and containment strategies triggered autonomously by the LangGraph AI layer upon threat verification.*
 <img width="1894" height="734" alt="Screenshot (492)" src="https://github.com/user-attachments/assets/f1eaa39e-8a60-48de-ab4c-e858a7ec1ecb" />
 <img width="1855" height="794" alt="Screenshot (493)" src="https://github.com/user-attachments/assets/40bc8baa-5a7b-4eb9-9b0c-05874cca9249" />
 <img width="1909" height="786" alt="Screenshot (494)" src="https://github.com/user-attachments/assets/373bb7a0-b692-4445-8f51-0071d68aac3e" />
@@ -69,32 +67,39 @@ The serverless PostgreSQL database maintains a normalized schema to track every 
 ```bash
 git clone [https://github.com/YOUR_GITHUB_USERNAME/ai-soc-copilot.git](https://github.com/YOUR_GITHUB_USERNAME/ai-soc-copilot.git)
 cd ai-soc-copilot
-
-2. Initialize the Virtual Environment
-
+``` 
+**2. Initialize the Virtual Environment**
+```bash
 Bash
 python -m venv venv
 source venv/bin/activate  # On Windows use: .\venv\Scripts\activate
-
-3. Install Native Production Dependencies
-
+``` 
+**3. Install Native Production Dependencies**
+```bash
 Bash
 pip install -r requirements.txt
-4. Populate Secret Environment Variables
+```
+
+**4. Populate Secret Environment Variables**
+
 Create a .env file in your root workspace and configure your cloud keys:
 
 Ini, TOML
 GEMINI_API_KEY="your_production_google_gemini_key"
 DATABASE_URL="postgresql://user:password@ep-your-neon-url.neon.tech/neondb"
-5. Spin Up the Backend API Microservice
 
+**5. Spin Up the Backend API Microservice**
+```bash
 Bash
 uvicorn app.main:app --reload
-6. Execute the Streamlit Web Application
-Open an isolated shell and run:
+```
+**6. Execute the Streamlit Web Application**
 
+Open an isolated shell and run:
+```bash
 Bash
 streamlit run app/dashboard.py
+```
 🎯 Testing the Cloud Ingestion Pipeline
 To test the live cloud ingestion framework instantly without utilizing local scripts, you can route direct payloads through the Swagger UI environment:
 
@@ -103,11 +108,12 @@ Navigate to the Render API Endpoint Docs.
 Click Try it out under the /analyze POST block.
 
 Paste a standardized payload inside the request body using the explicit schema:
-
+```bash
 JSON
 {
   "log_data": "[Forcepoint_DLP] EVENT: Bulk Data Exfiltration | USER: test_analyst@company.com | TELEMETRY: Staging mass sensitive files to unapproved endpoints."
 }
+```
 Click Execute. The cloud service will compute the entry, store it in the Neon PostgreSQL ledger, and reflect the new telemetry live on your Streamlit Dashboard.
 
-Developed as a decoupled, proof-of-concept system for modernizing automated enterprise security infrastructures.
+*******Developed as a decoupled, proof-of-concept system for modernizing automated enterprise security infrastructures.*******
