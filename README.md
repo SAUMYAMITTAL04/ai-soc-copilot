@@ -1,22 +1,41 @@
 # 🛡️ Enterprise AI SOC Command Center (Autonomous Tier-1 Copilot)
 
-An autonomous, cloud-native SIEM/SOAR platform designed to eliminate alert fatigue and replace traditional, manual MSSP triage workflows. 
+An autonomous, cloud-native SIEM/SOAR platform engineered to eliminate alert fatigue and replace traditional, manual MSSP triage workflows. 
 
-In a standard enterprise environment, security operations rely on disconnected tools (Forcepoint DLP, CrowdStrike EDR, Okta IAM) that generate thousands of daily alerts. This project introduces a **Tier-0 AI Copilot** that sits above the security stack. It ingests raw telemetry, utilizes an LLM to analyze context in real-time, filters out benign noise, and autonomously generates active SOAR countermeasures for verified threats.
+In a standard enterprise environment, security operations rely on disconnected vendor tools (DLP, EDR, IAM) that generate thousands of daily alerts. This project introduces an autonomous **Tier-0 AI Copilot** that sits above the security stack. It ingests raw telemetry, utilizes an LLM to analyze context in real-time, filters out benign noise, and automatically executes live SOAR countermeasures for verified threats.
 
-## 🚀 Business Impact
-* **Eliminates Tier-1 Bottlenecks:** Replaces expensive, manual alert triage with millisecond AI classification (True/False/Benign Positive).
-* **Automates Active Defense:** Transitions security posture from passive monitoring to active SOAR (Security Orchestration, Automation, and Response).
-* **Centralizes Intelligence:** Aggregates disconnected vendor logs into a single, highly visible command dashboard.
+### 🔗 Live Deployments
+* **Live Command Center Dashboard:** [sa-soc-copilot.streamlit.app](https://sa-soc-copilot.streamlit.app/#enterprise-ai-soc-command-center)
+* **Interactive API Documentation:** [soc-copilot-api.onrender.com (Swagger UI)](https://soc-copilot-api.onrender.com/docs#/default/analyze_log_endpoint_analyze_post)
+
+---
+
+## 🚀 Business Impact & Value Proposition
+* **Eliminates Tier-1 Bottlenecks:** Replaces expensive, outsourced third-party human triage (MSSP models) with immediate, millisecond AI event classification.
+* **Automates Active Defense:** Shifts an enterprise security posture from passive, delayed monitoring to real-time, autonomous SOAR (Security Orchestration, Automation, and Response).
+* **Centralizes Heterogeneous Telemetry:** Aggregates unstructured logs across multiple vendors into a single, standardized security ledger.
+
+---
+
+## 📊 Command Center UI & Performance
+
+*Figure 2: Active SOAR playbooks and containment strategies triggered autonomously by the LangGraph AI layer upon threat verification.*
+<img width="1894" height="734" alt="Screenshot (492)" src="https://github.com/user-attachments/assets/f1eaa39e-8a60-48de-ab4c-e858a7ec1ecb" />
+<img width="1855" height="794" alt="Screenshot (493)" src="https://github.com/user-attachments/assets/40bc8baa-5a7b-4eb9-9b0c-05874cca9249" />
+<img width="1909" height="786" alt="Screenshot (494)" src="https://github.com/user-attachments/assets/373bb7a0-b692-4445-8f51-0071d68aac3e" />
+<img width="1807" height="695" alt="Screenshot (495)" src="https://github.com/user-attachments/assets/9bd74663-43e7-45f4-8811-11c58391113a" />
+
+
+
 
 ---
 
 ## 🏗️ System Architecture
 
-1. **The Brain (FastAPI & LangGraph):** A decoupled microservice pipeline that receives incoming raw logs and utilizes Google Gemini to perform deep contextual analysis.
-2. **The Vault (Neon PostgreSQL):** A serverless cloud database that persistently stores threat intelligence, keeping a permanent ledger of incident IDs, raw telemetry, AI analysis, and executed countermeasures.
-3. **The Command Center (Streamlit):** A live, public-facing React-based dashboard featuring visual analytics, threat volume tracking, and real-time displays of active SOAR playbooks.
-4. **The Adversary (Red Team Auto-Blaster):** A custom Python simulation script that continuously generates varied cyber-attacks (XSS, impossible travel, DLP exfiltration) to stress-test the API and populate the dashboard.
+1. **The Ingestion Layer (FastAPI):** A high-performance, asynchronous REST API hosting production endpoints to securely catch JSON security payloads.
+2. **The Logic & Orchestration Engine (LangGraph & Gemini LLM):** An advanced reasoning workflow that evaluates raw strings, performs contextual risk scoring, and determines defensive actions.
+3. **The Persistent Vault (Neon PostgreSQL):** A cloud-native, serverless PostgreSQL instance managing connection pools via SQLAlchemy to persistently store logs, classifications, and active playbooks.
+4. **The UI Layer (Streamlit):** A live visual analytics interface compiling threat metadata, telemetry tracking tables, and responsive metrics.
 
 ---
 
@@ -24,37 +43,71 @@ In a standard enterprise environment, security operations rely on disconnected t
 
 * **Backend Framework:** Python, FastAPI, Uvicorn
 * **AI Orchestration:** LangGraph, Google Gemini API
-* **Database:** Neon (Serverless PostgreSQL), SQLAlchemy, Pandas
-* **Frontend/Visualization:** Streamlit
-* **Deployment:** Render (API Host), Streamlit Community Cloud (Frontend)
+* **Database & ORM:** Neon (Serverless PostgreSQL), SQLAlchemy, Pandas
+* **Frontend Visualization:** Streamlit
+* **Deployment Environments:** Render (API Hosting), Streamlit Community Cloud (Dashboard UI)
 
 ---
 
-## ⚙️ Core Features
+## 🗄️ Core Database Schema (`threat_intel_logs`)
 
-* **Real-Time Telemetry Ingestion:** Processes high-volume log data via asynchronous API endpoints.
-* **Autonomous Threat Triage:** Uses LLM reasoning to separate routine network traffic from critical security incidents.
-* **SOAR Countermeasure Generation:** Automatically drafts remediation playbooks (e.g., "Suspended Active Directory account," "Quarantined Server IP") and logs them to the specific incident file.
-* **Live Visual Analytics:** dynamic dashboarding that groups log classifications and active defense measures into instantly readable metrics.
-* **Rate-Limit Resilience:** Includes custom error-handling and "sleep" states to gracefully manage upstream API quotas (429 Resource Exhausted handling).
-
----
-
-## 🗄️ Database Schema (`threat_intel_logs`)
+The serverless PostgreSQL database maintains a normalized schema to track every incident passing through the triage pipeline:
 
 | Column Name | Data Type | Description |
 | :--- | :--- | :--- |
-| `id` | Integer | Primary key, automated incident tracking number. |
-| `raw_log` | String | The original telemetry from the security vendor. |
-| `analysis` | String | The AI's contextual reasoning and payload breakdown. |
-| `is_threat` | Boolean | True/False classification for dashboard routing. |
-| `soar_action` | String | The automated countermeasure executed by the system. |
+| `id` | Integer | Primary Key (Serial). Unique automated incident tracking index. |
+| `raw_log` | String / Text | The raw, unstructured telemetry ingested from security endpoints. |
+| `analysis` | String / Text | High-fidelity markdown analysis and contextual reasoning generated by the AI. |
+| `is_threat` | Boolean | Binary flag separating malicious threats from routine false positives. |
+| `soar_action` | String / Text | The autonomous mitigation playbook drafted and initiated by the platform. |
 
 ---
 
-## 💻 Local Installation & Setup
+## 💻 Local Installation & Monolithic Configuration
 
-**1. Clone the repository**
+**1. Clone the Architecture**
 ```bash
 git clone [https://github.com/YOUR_GITHUB_USERNAME/ai-soc-copilot.git](https://github.com/YOUR_GITHUB_USERNAME/ai-soc-copilot.git)
 cd ai-soc-copilot
+
+2. Initialize the Virtual Environment
+
+Bash
+python -m venv venv
+source venv/bin/activate  # On Windows use: .\venv\Scripts\activate
+
+3. Install Native Production Dependencies
+
+Bash
+pip install -r requirements.txt
+4. Populate Secret Environment Variables
+Create a .env file in your root workspace and configure your cloud keys:
+
+Ini, TOML
+GEMINI_API_KEY="your_production_google_gemini_key"
+DATABASE_URL="postgresql://user:password@ep-your-neon-url.neon.tech/neondb"
+5. Spin Up the Backend API Microservice
+
+Bash
+uvicorn app.main:app --reload
+6. Execute the Streamlit Web Application
+Open an isolated shell and run:
+
+Bash
+streamlit run app/dashboard.py
+🎯 Testing the Cloud Ingestion Pipeline
+To test the live cloud ingestion framework instantly without utilizing local scripts, you can route direct payloads through the Swagger UI environment:
+
+Navigate to the Render API Endpoint Docs.
+
+Click Try it out under the /analyze POST block.
+
+Paste a standardized payload inside the request body using the explicit schema:
+
+JSON
+{
+  "log_data": "[Forcepoint_DLP] EVENT: Bulk Data Exfiltration | USER: test_analyst@company.com | TELEMETRY: Staging mass sensitive files to unapproved endpoints."
+}
+Click Execute. The cloud service will compute the entry, store it in the Neon PostgreSQL ledger, and reflect the new telemetry live on your Streamlit Dashboard.
+
+Developed as a decoupled, proof-of-concept system for modernizing automated enterprise security infrastructures.
